@@ -13,14 +13,20 @@
 
 <p>This component demonstrates showing data.</p>
 
-<CustomerGrid customers="@customers"></CustomerGrid>
-<OrderGrid orders="@orders"></OrderGrid>
+<div>
+    <CustomerGrid customers="@customersOrdersResponse?.Customers"></CustomerGrid>
+</div>
+<div>
+    <OrderGrid orders="@customersOrdersResponse?.Orders"></OrderGrid>
+</div>
 
 
 
 @code {
     private List<Customer> customers;
     private List<Order> orders;
+
+    private CustomersOrdersResponse customersOrdersResponse;
 
     private string? errorMessage;
 
@@ -49,7 +55,7 @@
             HttpRequestMessage request = new HttpRequestMessage
                 {
                     Method = HttpMethod.Get,
-                    RequestUri = new Uri("https://localhost:7128/customer"),
+                    RequestUri = new Uri("https://localhost:7192/Main"),
                 };
 
             // HttpRequestMessage request = new HttpRequestMessage
@@ -72,14 +78,14 @@
                     PropertyNameCaseInsensitive = true
                 };
 
-            customers = JsonSerializer.Deserialize<List<Customer>>(contentStream, options);
+            customersOrdersResponse = JsonSerializer.Deserialize<CustomersOrdersResponse>(contentStream, options);
 
 
-            if (customers == null || !customers.Any())
+            if (customersOrdersResponse == null)
             {
-                errorMessage = "No customers were returned from the API.";
+                errorMessage = "No data were returned from the API.";
             }
-    
+
 
 
         }
@@ -97,7 +103,7 @@
         }
         finally
         {
-           
+
         }
     }
 }
