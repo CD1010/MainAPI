@@ -24,6 +24,17 @@ public class MainController : ControllerBase
     [HttpGet(Name = "GetCustomersAndOrders")]
     public async Task<IActionResult> Get()
     {
+        return await FetchCustomersAndOrders();
+    }
+
+    [HttpPost("MainPost")]
+    public async Task<IActionResult> MainPost()
+    {
+        return await FetchCustomersAndOrders();
+    }
+
+    private async Task<IActionResult> FetchCustomersAndOrders()
+    {
         var apiKey = _configuration["ApiKey"];
         var providedApiKey = Request.Headers["X-API-Key"].FirstOrDefault();
 
