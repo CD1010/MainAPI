@@ -3,6 +3,8 @@ using Microsoft.Extensions.Configuration;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text.Json;
+using Shared.Models;
+using Shared;
 
 namespace MainAPI.Controllers;
 
@@ -13,12 +15,14 @@ public class MainController : ControllerBase
     private readonly ILogger<MainController> _logger;
     private readonly IConfiguration _configuration;
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IAuthClientHelper _authClientHelper;
 
-    public MainController(ILogger<MainController> logger, IConfiguration configuration, IHttpClientFactory httpClientFactory)
+    public MainController(ILogger<MainController> logger, IConfiguration configuration, IHttpClientFactory httpClientFactory, IAuthClientHelper authClientHelper)
     {
         _logger = logger;
         _configuration = configuration;
         _httpClientFactory = httpClientFactory;
+        _authClientHelper = authClientHelper;
     }
 
     [HttpGet(Name = "GetCustomersAndOrders")]
@@ -33,28 +37,33 @@ public class MainController : ControllerBase
         return await FetchCustomersAndOrders();
     }
 
+    [HttpGet("customers")]
+    public async Task<ActionResult<List<Customer>>> GetCustomers()
+    {
+        var customers = await FetchCustomers();
+        if (customers == null) return Unauthorized("Invalid API Key");
+        return Ok(customers);
+    }
+
+    [HttpGet("orders")]
+    public async Task<IActionResult> GetOrders()
+    {
+        var orders = await FetchOrders();
+        if (orders == null) return Unauthorized("Invalid API Key");
+        return Ok(orders);
+    }
+
     private async Task<IActionResult> FetchCustomersAndOrders()
     {
-        var apiKey = _configuration["ApiKey"];
-        var providedApiKey = Request.Headers["X-API-Key"].FirstOrDefault();
+        var customers = await FetchCustomers();
+        var orders = await FetchOrders();
 
-        if (string.IsNullOrEmpty(providedApiKey) || providedApiKey != apiKey)
+        if (customers == null || orders == null)
         {
             return Unauthorized("Invalid API Key");
         }
 
-        var httpClient = _httpClientFactory.CreateClient();
-        httpClient.DefaultRequestHeaders.Add("X-API-Key", apiKey);
-
-        var customersTask = httpClient.GetStringAsync("https://localhost:7128/customer");
-        var ordersTask = httpClient.GetStringAsync("https://localhost:7193/orders");
-
-        await Task.WhenAll(customersTask, ordersTask);
-
-        var customers = JsonSerializer.Deserialize<object>(await customersTask);
-        var orders = JsonSerializer.Deserialize<object>(await ordersTask);
-
-        var result = new
+        var result = new CustomersOrdersResponse()
         {
             Customers = customers,
             Orders = orders
@@ -62,4 +71,29 @@ public class MainController : ControllerBase
 
         return Ok(result);
     }
+
+    private async Task<List<Customer>> FetchCustomers()
+    {
+        var key = _configuration["ApiKey"];
+
+        var httpClient = _authClientHelper.GetAuthorizedHttpClient(key);
+
+        if (httpClient == null) return null;
+
+        var response = await httpClient.GetFromJsonAsync<List<Customer>>("https://localhost:7128/customer");
+        return response;
+    }
+
+    private async Task<List<Order>> FetchOrders()
+    {
+        var key = _configuration["ApiKey"];
+
+        var httpClient = _authClientHelper.GetAuthorizedHttpClient(key);
+        if (httpClient == null) return null;
+
+        var response = await httpClient.GetFromJsonAsync<List<Order>>("https://localhost:7193/orders");
+        return response;
+    }
+
+    
 }

@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Shared.Models;
+using System.Text.Json;
 
 namespace CustomerAPI.Controllers;
 
@@ -19,8 +21,8 @@ public class CustomerController : ControllerBase
     }
 
 
-    [HttpGet(Name = "GetCustomers")]
-    public async Task<ActionResult<IEnumerable<Customer>>> Get()
+    [HttpGet(Name = "customer")]
+    public async Task<ActionResult<List<Customer>>> Get()
     {
         var apiKey = _configuration["ApiKey"];
         var providedApiKey = Request.Headers["X-API-Key"].FirstOrDefault();
@@ -29,13 +31,17 @@ public class CustomerController : ControllerBase
         {
             return Unauthorized("Invalid API Key");
         }
-        await Task.Delay(1000);
-        return await Task.FromResult(Enumerable.Range(1, 5).Select(index => new Customer
+        await Task.Delay(500);
+        var ret =  await Task.FromResult(Enumerable.Range(1, 5).Select(index => new Customer
         {
             Email = $"{index}@nowhere.com",
             Name = "User " + index.ToString(),
             Id = index
         })
-        .ToArray());
+        .ToList<Customer>());
+
+        return Ok(ret);
+        
+
     }
 }

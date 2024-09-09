@@ -1,5 +1,6 @@
-using MainAPI;
+using MainAPI.ServiceDefaults;
 using Microsoft.OpenApi.Models;
+using Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
@@ -8,6 +9,18 @@ builder.AddServiceDefaults();
 
 builder.Services.AddControllers();
 builder.Services.AddHttpClient(); // Add this line to register IHttpClientFactory
+builder.Services.AddTransient<IAuthClientHelper, AuthClientHelper>();
+
+// Add CORS services
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -54,6 +67,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Use CORS
+app.UseCors("AllowAll");
 
 // Add the API Key middleware
 app.UseMiddleware<ApiKeyMiddleware>();

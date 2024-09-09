@@ -1,6 +1,6 @@
 @MainAPI_HostAddress = http://localhost:5029
 
-GET {{MainAPI_HostAddress}}/weatherforecast/
+GET {{MainAPI_HostAddress}}/main/
 Accept: application/json
 
 ###

@@ -1,5 +1,6 @@
-using MainAPI;
+using MainAPI.ServiceDefaults;
 using Microsoft.OpenApi.Models;
+using Shared;
 
 namespace CustomerAPI
 {
@@ -8,6 +9,19 @@ namespace CustomerAPI
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+
+
+            // Add CORS services
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", policy =>
+                {
+                    policy.AllowAnyOrigin()
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                });
+            });
 
             builder.AddServiceDefaults();
 

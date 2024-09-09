@@ -1,0 +1,103 @@
+﻿@page "/dashboard"
+@attribute [StreamRendering]
+@inject IAuthClientHelper helper
+@inject IConfiguration configuration
+
+@using Shared
+@using Shared.Models
+@using System.Text.Json
+
+<PageTitle>Dashboard</PageTitle>
+
+<h1>Dashboard</h1>
+
+<p>This component demonstrates showing data.</p>
+
+<CustomerGrid customers="@customers"></CustomerGrid>
+<OrderGrid orders="@orders"></OrderGrid>
+
+
+
+@code {
+    private List<Customer> customers;
+    private List<Order> orders;
+
+    private string? errorMessage;
+
+    private CustomerGrid custGrid { get; set; }
+
+
+    private HttpClient GetClient()
+    {
+        var apiKey = configuration["ApiKey"];
+        if (string.IsNullOrEmpty(apiKey))
+        {
+            throw new InvalidOperationException("API Key is not configured.");
+        }
+
+        var client = helper.GetAuthorizedHttpClient(apiKey);
+        return client;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+
+            using var client = GetClient();
+
+            HttpRequestMessage request = new HttpRequestMessage
+                {
+                    Method = HttpMethod.Get,
+                    RequestUri = new Uri("https://localhost:7128/customer"),
+                };
+
+            // HttpRequestMessage request = new HttpRequestMessage
+            //  {
+            //         Method = HttpMethod.Get,
+            //         RequestUri = new Uri("https://localhost:7192/Main"),
+            //     };
+
+            //request.Headers.Add("X-API-Key", apiKey);
+
+            // Get customers
+            HttpResponseMessage response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+
+
+            string contentStream = await response.Content.ReadAsStringAsync();
+
+            var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+
+            customers = JsonSerializer.Deserialize<List<Customer>>(contentStream, options);
+
+
+            if (customers == null || !customers.Any())
+            {
+                errorMessage = "No customers were returned from the API.";
+            }
+    
+
+
+        }
+        catch (HttpRequestException ex)
+        {
+            errorMessage = $"Error fetching data: {ex.Message}";
+        }
+        catch (JsonException ex)
+        {
+            errorMessage = $"Error parsing response: {ex.Message}";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"An unexpected error occurred: {ex.Message}";
+        }
+        finally
+        {
+           
+        }
+    }
+}

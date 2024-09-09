@@ -1,5 +1,6 @@
-using MainAPI;
+using MainAPI.ServiceDefaults;
 using Microsoft.OpenApi.Models;
+using Shared;
 
 namespace OrdersAPI
 {
@@ -9,6 +10,8 @@ namespace OrdersAPI
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.AddServiceDefaults();
+            builder.Services.AddTransient<IAuthClientHelper, AuthClientHelper>();
+
 
             // Add services to the container.
 

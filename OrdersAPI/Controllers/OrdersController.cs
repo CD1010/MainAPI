@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using OrderAPI;
+using Shared.Models;
+
 
 namespace OrdersAPI.Controllers;
 

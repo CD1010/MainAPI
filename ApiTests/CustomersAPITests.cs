@@ -2,8 +2,8 @@ using System.Net;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
-using CustomerAPI;
 using CustomerAPI.Controllers;
+using Shared.Models;
 
 namespace ApiTests
 {

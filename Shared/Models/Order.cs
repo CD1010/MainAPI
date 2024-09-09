@@ -1,4 +1,4 @@
-namespace OrderAPI;
+namespace Shared.Models;
 
 public class Order
 {
@@ -7,7 +7,7 @@ public class Order
 
     public DateOnly Date { get; set; }
 
-    public  int Quantity { get; set; }
+    public int Quantity { get; set; }
 
 
 }

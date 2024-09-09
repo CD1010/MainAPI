@@ -1,0 +1,31 @@
+﻿
+
+@using Shared
+@using Shared.Models
+@using System.Text.Json
+
+@code {
+
+    [Parameter]
+    public List<Customer> customers { get; set; }
+ 
+}
+
+@if( customers == null )
+{
+    <h1>Loading...</h1>
+
+}
+else
+{
+
+    <FluentDataGrid Id="customers" Items="@(customers.AsQueryable())" GridTemplateColumns="1fr 1fr 1fr 2fr" TGridItem="Customer">
+        <PropertyColumn Title="Id" Property="@((Customer c) => c.Id)" Align="Align.Start" />
+        <PropertyColumn Title="Name" Property="@((Customer c) => c.Name)" Align="Align.Start" />
+        <PropertyColumn Title="Email" Property="@((Customer c) => c.Email)" Align="Align.Start" /> 
+        </FluentDataGrid>
+}
+
+
+
+

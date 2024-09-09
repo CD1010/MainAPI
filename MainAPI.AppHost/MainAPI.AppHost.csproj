@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CustomerAPI\CustomerAPI.csproj" />
+    <ProjectReference Include="..\FrontEnd\FrontEnd\FrontEnd.csproj" />
     <ProjectReference Include="..\MainAPI\MainAPI.csproj" />
     <ProjectReference Include="..\OrdersAPI\OrdersAPI.csproj" />
   </ItemGroup>
