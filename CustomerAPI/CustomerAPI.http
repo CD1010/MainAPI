@@ -1,0 +1,6 @@
+@CustomerAPI_HostAddress = http://localhost:5266
+
+GET {{CustomerAPI_HostAddress}}/orders/
+Accept: application/json
+
+###
