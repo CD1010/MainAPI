@@ -58,14 +58,7 @@
                     RequestUri = new Uri("https://localhost:7192/Main"),
                 };
 
-            // HttpRequestMessage request = new HttpRequestMessage
-            //  {
-            //         Method = HttpMethod.Get,
-            //         RequestUri = new Uri("https://localhost:7192/Main"),
-            //     };
-
-            //request.Headers.Add("X-API-Key", apiKey);
-
+           
             // Get customers
             HttpResponseMessage response = await client.SendAsync(request);
             response.EnsureSuccessStatusCode();
