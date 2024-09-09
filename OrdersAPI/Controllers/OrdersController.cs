@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using OrderAPI;
 
-namespace MainAPI.Controllers;
+namespace OrdersAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]

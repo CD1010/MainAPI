@@ -1,4 +1,4 @@
-namespace MainAPI;
+namespace OrderAPI;
 
 public class Order
 {
