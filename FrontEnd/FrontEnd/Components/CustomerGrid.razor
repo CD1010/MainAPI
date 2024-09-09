@@ -21,8 +21,8 @@ else
 
     <FluentDataGrid Id="customers" Items="@(customers.AsQueryable())" GridTemplateColumns="1fr 1fr 1fr 2fr" TGridItem="Customer">
         <PropertyColumn Title="Id" Property="@((Customer c) => c.Id)" Align="Align.Start" />
-        <PropertyColumn Title="Name" Property="@((Customer c) => c.Name)" Align="Align.Start" />
-        <PropertyColumn Title="Email" Property="@((Customer c) => c.Email)" Align="Align.Start" /> 
+        <PropertyColumn Title="Name" Property="@((Customer c) => c.Name)" Align="Align.Center" />
+        <PropertyColumn Title="Email" Property="@((Customer c) => c.Email)" Align="Align.End" /> 
         </FluentDataGrid>
 }
 

@@ -9,29 +9,48 @@
 
 <PageTitle>Dashboard</PageTitle>
 
-<h1>Dashboard</h1>
+<div class="dashboard-container">
+    <h1>Dashboard</h1>
 
-<p>This component demonstrates showing data.</p>
+    <p>This component demonstrates showing data.</p>
 
-<div>
-    <CustomerGrid customers="@customersOrdersResponse?.Customers"></CustomerGrid>
+
+        <div class="grid-container">
+            <h2>Customers</h2>
+            <CustomerGrid customers="@customersOrdersResponse?.Customers"></CustomerGrid>
+        </div>
+
+        <div class="grid-container">
+            <h2>Orders</h2>
+            <OrderGrid orders="@customersOrdersResponse?.Orders"></OrderGrid>
+        </div>
+    
 </div>
-<div>
-    <OrderGrid orders="@customersOrdersResponse?.Orders"></OrderGrid>
-</div>
 
+<style>
+    .dashboard-container {
+        padding: 20px;
+    }
 
+    .grid-container {
+        margin-bottom: 30px;
+    }
+
+    .error-message {
+        color: red;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    ::deep .fluent-data-grid {
+        height: auto;
+        overflow-y: auto;
+    }
+</style>
 
 @code {
-    private List<Customer> customers;
-    private List<Order> orders;
-
     private CustomersOrdersResponse customersOrdersResponse;
-
     private string? errorMessage;
-
-    private CustomerGrid custGrid { get; set; }
-
 
     private HttpClient GetClient()
     {
@@ -41,46 +60,37 @@
             throw new InvalidOperationException("API Key is not configured.");
         }
 
-        var client = helper.GetAuthorizedHttpClient(apiKey);
-        return client;
+        return helper.GetAuthorizedHttpClient(apiKey);
     }
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-
             using var client = GetClient();
 
             HttpRequestMessage request = new HttpRequestMessage
-                {
-                    Method = HttpMethod.Get,
-                    RequestUri = new Uri("https://localhost:7192/Main"),
-                };
+            {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri("https://localhost:7192/Main"),
+            };
 
-           
-            // Get customers
             HttpResponseMessage response = await client.SendAsync(request);
             response.EnsureSuccessStatusCode();
-
 
             string contentStream = await response.Content.ReadAsStringAsync();
 
             var options = new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                };
+            {
+                PropertyNameCaseInsensitive = true
+            };
 
             customersOrdersResponse = JsonSerializer.Deserialize<CustomersOrdersResponse>(contentStream, options);
-
 
             if (customersOrdersResponse == null)
             {
                 errorMessage = "No data were returned from the API.";
             }
-
-
-
         }
         catch (HttpRequestException ex)
         {
@@ -93,10 +103,6 @@
         catch (Exception ex)
         {
             errorMessage = $"An unexpected error occurred: {ex.Message}";
-        }
-        finally
-        {
-
         }
     }
 }
